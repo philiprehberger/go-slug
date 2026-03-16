@@ -70,6 +70,13 @@ result := slug.Unique("Hello World", func(s string) bool {
 | `WithMaxLen(n int) Option` | Set max slug length with word-boundary truncation |
 | `WithCustomSubs(subs map[string]string) Option` | Set custom string substitutions |
 
+## Development
+
+```bash
+go test ./...
+go vet ./...
+```
+
 ## License
 
 MIT
