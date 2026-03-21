@@ -1,10 +1,14 @@
 # Changelog
 
+## 0.1.3
+
+- Consolidate README badges onto single line, fix CHANGELOG format
+
 ## 0.1.2
 
 - Add Development section to README
 
-## 0.1.0 (2026-03-15)
+## 0.1.0
 
 - Initial release
 - URL-safe slug generation from strings
