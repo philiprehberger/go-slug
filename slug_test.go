@@ -125,3 +125,197 @@ func TestUnique_NoConflict(t *testing.T) {
 		t.Errorf("Unique with no conflict = %q, want %q", got, want)
 	}
 }
+
+func TestSlugger_StopWords(t *testing.T) {
+	s := New(WithStopWords("the", "a", "and"))
+	got := s.Make("The quick and a fox")
+	want := "quick-fox"
+	if got != want {
+		t.Errorf("Slugger.Make with stop words = %q, want %q", got, want)
+	}
+}
+
+func TestSlugger_StopWords_AllRemoved(t *testing.T) {
+	s := New(WithStopWords("hello", "world"))
+	got := s.Make("Hello World")
+	want := ""
+	if got != want {
+		t.Errorf("Slugger.Make with all stop words = %q, want %q", got, want)
+	}
+}
+
+func TestSlugger_StopWords_CaseInsensitive(t *testing.T) {
+	s := New(WithStopWords("THE", "And"))
+	got := s.Make("The fox and The dog")
+	want := "fox-dog"
+	if got != want {
+		t.Errorf("Slugger.Make with case-insensitive stop words = %q, want %q", got, want)
+	}
+}
+
+func TestSlugger_StopWords_DefaultList(t *testing.T) {
+	words := DefaultStopWords()
+	if len(words) != 18 {
+		t.Errorf("DefaultStopWords() length = %d, want 18", len(words))
+	}
+	s := New(WithStopWords(words...))
+	got := s.Make("The cat is on the mat")
+	want := "cat-mat"
+	if got != want {
+		t.Errorf("Slugger.Make with default stop words = %q, want %q", got, want)
+	}
+}
+
+func TestSlugger_Strict(t *testing.T) {
+	s := New(WithStrict())
+	got := s.Make("Über Café")
+	want := "ber-caf"
+	if got != want {
+		t.Errorf("Slugger.Make with strict mode = %q, want %q", got, want)
+	}
+}
+
+func TestSlugger_Strict_ASCIIOnly(t *testing.T) {
+	s := New(WithStrict())
+	got := s.Make("Hello World 123")
+	want := "hello-world-123"
+	if got != want {
+		t.Errorf("Slugger.Make strict with ASCII = %q, want %q", got, want)
+	}
+}
+
+func TestSlugger_Strict_Symbols(t *testing.T) {
+	s := New(WithStrict())
+	got := s.Make("rock & roll @ night")
+	want := "rock-roll-night"
+	if got != want {
+		t.Errorf("Slugger.Make strict with symbols = %q, want %q", got, want)
+	}
+}
+
+func TestToKebab_CamelCase(t *testing.T) {
+	got := ToKebab("camelCaseString")
+	want := "camel-case-string"
+	if got != want {
+		t.Errorf("ToKebab(\"camelCaseString\") = %q, want %q", got, want)
+	}
+}
+
+func TestToKebab_PascalCase(t *testing.T) {
+	got := ToKebab("PascalCaseString")
+	want := "pascal-case-string"
+	if got != want {
+		t.Errorf("ToKebab(\"PascalCaseString\") = %q, want %q", got, want)
+	}
+}
+
+func TestToKebab_Spaces(t *testing.T) {
+	got := ToKebab("Hello World")
+	want := "hello-world"
+	if got != want {
+		t.Errorf("ToKebab(\"Hello World\") = %q, want %q", got, want)
+	}
+}
+
+func TestToKebab_Underscores(t *testing.T) {
+	got := ToKebab("snake_case_string")
+	want := "snake-case-string"
+	if got != want {
+		t.Errorf("ToKebab(\"snake_case_string\") = %q, want %q", got, want)
+	}
+}
+
+func TestToKebab_Mixed(t *testing.T) {
+	got := ToKebab("XMLParser_config value")
+	want := "xml-parser-config-value"
+	if got != want {
+		t.Errorf("ToKebab(\"XMLParser_config value\") = %q, want %q", got, want)
+	}
+}
+
+func TestToKebab_Empty(t *testing.T) {
+	got := ToKebab("")
+	want := ""
+	if got != want {
+		t.Errorf("ToKebab(\"\") = %q, want %q", got, want)
+	}
+}
+
+func TestToSnake_CamelCase(t *testing.T) {
+	got := ToSnake("camelCaseString")
+	want := "camel_case_string"
+	if got != want {
+		t.Errorf("ToSnake(\"camelCaseString\") = %q, want %q", got, want)
+	}
+}
+
+func TestToSnake_PascalCase(t *testing.T) {
+	got := ToSnake("PascalCaseString")
+	want := "pascal_case_string"
+	if got != want {
+		t.Errorf("ToSnake(\"PascalCaseString\") = %q, want %q", got, want)
+	}
+}
+
+func TestToSnake_Spaces(t *testing.T) {
+	got := ToSnake("Hello World")
+	want := "hello_world"
+	if got != want {
+		t.Errorf("ToSnake(\"Hello World\") = %q, want %q", got, want)
+	}
+}
+
+func TestToSnake_Hyphens(t *testing.T) {
+	got := ToSnake("kebab-case-string")
+	want := "kebab_case_string"
+	if got != want {
+		t.Errorf("ToSnake(\"kebab-case-string\") = %q, want %q", got, want)
+	}
+}
+
+func TestToSnake_Mixed(t *testing.T) {
+	got := ToSnake("XMLParser_config value")
+	want := "xml_parser_config_value"
+	if got != want {
+		t.Errorf("ToSnake(\"XMLParser_config value\") = %q, want %q", got, want)
+	}
+}
+
+func TestIsSlug_Valid(t *testing.T) {
+	tests := []string{
+		"hello-world",
+		"hello",
+		"a",
+		"hello-world-123",
+		"123",
+		"a-b-c",
+	}
+	for _, s := range tests {
+		if !IsSlug(s) {
+			t.Errorf("IsSlug(%q) = false, want true", s)
+		}
+	}
+}
+
+func TestIsSlug_Invalid(t *testing.T) {
+	tests := []struct {
+		input string
+		desc  string
+	}{
+		{"", "empty string"},
+		{"-hello", "leading hyphen"},
+		{"hello-", "trailing hyphen"},
+		{"hello--world", "consecutive hyphens"},
+		{"Hello", "uppercase letters"},
+		{"hello world", "spaces"},
+		{"hello_world", "underscores"},
+		{"héllo", "non-ASCII"},
+		{"-", "single hyphen"},
+		{"hello--", "trailing consecutive hyphens"},
+	}
+	for _, tt := range tests {
+		if IsSlug(tt.input) {
+			t.Errorf("IsSlug(%q) = true, want false (%s)", tt.input, tt.desc)
+		}
+	}
+}

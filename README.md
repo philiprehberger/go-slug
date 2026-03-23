@@ -41,6 +41,53 @@ s = slug.New(slug.WithCustomSubs(map[string]string{
 s.Make("Learning C++ and C#") // "learning-cpp-and-csharp"
 ```
 
+### Stop Words
+
+```go
+// Remove specific words
+s := slug.New(slug.WithStopWords("the", "a", "and"))
+s.Make("The quick and a fox") // "quick-fox"
+
+// Use built-in stop word list
+s = slug.New(slug.WithStopWords(slug.DefaultStopWords()...))
+s.Make("The cat is on the mat") // "cat-mat"
+```
+
+### Strict Mode
+
+```go
+// Only allow ASCII letters, digits, and separator (no transliteration)
+s := slug.New(slug.WithStrict())
+s.Make("Über Café")          // "ber-caf"
+s.Make("Hello World 123")    // "hello-world-123"
+s.Make("rock & roll @ night") // "rock-roll-night"
+```
+
+### Case Conversion
+
+```go
+// Kebab-case (splits on spaces, underscores, camelCase boundaries)
+slug.ToKebab("camelCaseString")  // "camel-case-string"
+slug.ToKebab("PascalCaseString") // "pascal-case-string"
+slug.ToKebab("snake_case_string") // "snake-case-string"
+
+// Snake_case (same splitting, underscore separator)
+slug.ToSnake("camelCaseString")  // "camel_case_string"
+slug.ToSnake("Hello World")     // "hello_world"
+slug.ToSnake("kebab-case-string") // "kebab_case_string"
+```
+
+### Validation
+
+```go
+slug.IsSlug("hello-world")   // true
+slug.IsSlug("hello")         // true
+slug.IsSlug("Hello-World")   // false (uppercase)
+slug.IsSlug("hello--world")  // false (consecutive hyphens)
+slug.IsSlug("-hello")        // false (leading hyphen)
+slug.IsSlug("")              // false (empty)
+```
+
 ### Unique Slugs
 
 ```go
@@ -67,6 +114,12 @@ result := slug.Unique("Hello World", func(s string) bool {
 | `WithSeparator(sep string) Option` | Set the word separator (default: "-") |
 | `WithMaxLen(n int) Option` | Set max slug length with word-boundary truncation |
 | `WithCustomSubs(subs map[string]string) Option` | Set custom string substitutions |
+| `WithStopWords(words ...string) Option` | Remove specified words from the slug |
+| `DefaultStopWords() []string` | Returns built-in list of common English stop words |
+| `WithStrict() Option` | Strict mode: ASCII only, no transliteration |
+| `ToKebab(s string) string` | Convert string to kebab-case |
+| `ToSnake(s string) string` | Convert string to snake_case |
+| `IsSlug(s string) bool` | Check if string is a valid slug |
 
 ## Development
 
