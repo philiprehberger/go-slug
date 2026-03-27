@@ -1,6 +1,6 @@
 # go-slug
 
-[![CI](https://github.com/philiprehberger/go-slug/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/go-slug/actions/workflows/ci.yml) [![Go Reference](https://pkg.go.dev/badge/github.com/philiprehberger/go-slug.svg)](https://pkg.go.dev/github.com/philiprehberger/go-slug) [![License](https://img.shields.io/github/license/philiprehberger/go-slug)](LICENSE)
+[![CI](https://github.com/philiprehberger/go-slug/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/go-slug/actions/workflows/ci.yml) [![Go Reference](https://pkg.go.dev/badge/github.com/philiprehberger/go-slug.svg)](https://pkg.go.dev/github.com/philiprehberger/go-slug) [![License](https://img.shields.io/github/license/philiprehberger/go-slug)](LICENSE) [![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 URL-safe slug generator for Go. Handles Unicode, configurable, zero dependencies
 
